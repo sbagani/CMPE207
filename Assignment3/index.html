@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CMPE 207 - HW3- Chat Application </title>
+    <style>
+        * { margin: 5; padding: 0; box-sizing: border-box; }
+        body { font: 15px Helvetica, TimeNewRoman; border-color: #000; width:100%; border:thick}
+        form { background: #fff; padding: 3px; position: fixed; bottom: 0; width: 100%; border-color: #000; border-top-style: solid; border-top-width: 1px;}
+        form input { border-style: solid; border-width: 1px; padding: 10px; width: 85%; margin-right: .5%; }
+        form button { width: 12%; background: rgb(9, 231, 57); border: black; padding: 10px; margin-left: 2%; }
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+    </style>
+    <script src="../../socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+  <body bgcolor="white">
+  </body>
+  <body>
+    <ul id="messages"></ul>
+    <form action="/" method="POST" id="chatForm">
+      <input id="txt" autocomplete="off" autofocus="on" oninput="isTyping()" placeholder="type here" /><button>Send</button>
+    </form>
+    <script>
+            var socket = io.connect('http://localhost:5000');
+            $('form').submit(function(e){
+                e.preventDefault(); 
+                socket.emit('chat_text', $('#txt').val());
+                $('#txt').val('');
+                return false;
+            });
+            
+            socket.on('chat_text', function(msg){
+                $('#messages').append($('<li>').html(msg));
+            });
+            
+            socket.on('is_online', function(userName) {
+                $('#messages').append($('<li>').html(userName));
+            });
+
+            var userName = prompt('Please type your name');
+            socket.emit('userName', userName);
+    </script>
+  </body>
+</html>
